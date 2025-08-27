@@ -13,19 +13,18 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        var configs = new Configs();
-        builder.Configuration.GetSection("Configurations").Bind(configs);
+        var configs = builder.Configuration.GetSection("Configurations").Get<Configs>();
 
         // Register typed HttpClient for ClassicClient using base URL from configs
         builder.Services.AddHttpClient<IClient, ClassicClient>((sp, http) =>
         {
-            http.BaseAddress = new Uri(configs.ApiUrl.TrimEnd('/') + "/");
+            http.BaseAddress = new Uri(configs!.ApiUrl.TrimEnd('/') + "/");
         });
 
         // Register typed HttpClient for AuthClassicClient using base URL from configs
         builder.Services.AddHttpClient<IAuthorizedClient, AuthClassicClient>((sp, http) =>
         {
-            http.BaseAddress = new Uri(configs.ApiUrl.TrimEnd('/') + "/");
+            http.BaseAddress = new Uri(configs!.ApiUrl.TrimEnd('/') + "/");
             // Add Authorisation header
             http.DefaultRequestHeaders.Add("Authorization", $"Bearer {configs.ApiBearerToken}");
         });
