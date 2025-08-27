@@ -13,8 +13,13 @@ public partial class Home
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
-            _authString = await AuthClient.GetAuthorization();
+            await GetAuthorized();
             StateHasChanged();
         }
+    }
+
+    private async Task GetAuthorized()
+    {
+        _authString = await AuthClient.GetAuthorization();
     }
 }
