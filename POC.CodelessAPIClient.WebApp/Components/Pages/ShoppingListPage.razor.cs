@@ -45,7 +45,7 @@ public partial class ShoppingListPage : ComponentBase
         _operationItem.UnitName = _units.Single(x => x.Abrv == _operationItem.Unit).Name;
         _shoppingList = await Client.AddItem(_operationItem);
 
-        RefreshOperationItem();
+        await RefreshList();
 
         _isLoading = false;
         StateHasChanged();
@@ -61,7 +61,7 @@ public partial class ShoppingListPage : ComponentBase
         item.IsBought = (bool)value;
         _shoppingList = await Client.UpdateItem(item);
 
-        RefreshOperationItem();
+        await RefreshList();
         _isLoading = false;
         StateHasChanged();
     }
@@ -75,7 +75,8 @@ public partial class ShoppingListPage : ComponentBase
             StateHasChanged();
             await Client.RemoveItem(item);
 
-            RefreshOperationItem();
+            await RefreshList();
+
             _isLoading = false;
             StateHasChanged();
         }
@@ -87,11 +88,12 @@ public partial class ShoppingListPage : ComponentBase
         _operationItem.Unit = _units.First().Abrv;
     }
 
-    private Task RefreshList(bool bValue)
+    private async Task RefreshList(bool? bValue = null)
     {
-        _showAll = bValue;
-        StateHasChanged();
+        _showAll = bValue ?? _showAll;
+        _shoppingList = await Client.Get();
+        RefreshOperationItem();
 
-        return Task.CompletedTask;
+        StateHasChanged();
     }
 }
