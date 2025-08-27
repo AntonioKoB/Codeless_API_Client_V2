@@ -13,7 +13,15 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        builder.Services.AddSingleton<IClient, FakeClient>();
+        var configs = new Configs();
+        builder.Configuration.GetSection("Configurations").Bind(configs);
+
+        // Register typed HttpClient for ClassicClient using base URL from configs
+        builder.Services.AddHttpClient<IClient, ClassicClient>((sp, http) =>
+        {
+            http.BaseAddress = new Uri(configs.ApiUrl.TrimEnd('/') + "/");
+        });
+
         builder.Services.AddSingleton<IAuthorizedClient, AuthFakeClient>();
 
         var app = builder.Build();
