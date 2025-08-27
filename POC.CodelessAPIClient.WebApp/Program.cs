@@ -1,5 +1,6 @@
 using POC.CodelessAPIClient.WebApp.Components;
 using POC.CodelessAPIClient.WebApp.HttpClients;
+using Refit;
 
 namespace POC.CodelessAPIClient.WebApp;
 
@@ -13,8 +14,14 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        builder.Services.AddSingleton<IClient, FakeClient>();
-        builder.Services.AddSingleton<IAuthorizedClient, AuthFakeClient>();
+        var configs = builder.Configuration.GetSection("Configurations").Get<Configs>();
+
+        builder.Services.AddRefitClient<IClient>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(configs!.ApiUrl));
+
+        builder.Services.AddRefitClient<IAuthorizedClient>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(configs!.ApiUrl))
+            .AddHttpMessageHandler(() => new AuthorizedHandler(configs.ApiBearerToken));
 
         var app = builder.Build();
 
