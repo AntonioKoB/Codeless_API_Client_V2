@@ -1,0 +1,66 @@
+@page "/shoppinglist"
+@if (_isLoading)
+{
+    <Loading />
+}
+else
+{
+    <h3>Shopping List - @(_shoppingList?.Name ?? "Loading...")</h3>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 p-2"><input class="form-control w-100" type="text" @bind="_operationItem.Name"/></div>
+            <div class="col-1 p-1">Unit</div>
+            <div class="col-11 p-1">
+                <select class="form-control w-100" @bind="_operationItem.Unit">
+                    @foreach (var unit in _units)
+                    {
+                        <option value="@unit.Abrv">@unit.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-1 p-1">Quantity</div>
+            <div class="col-11 p-1"><input class="form-control w-100" type="number" @bind="_operationItem.Quantity"/></div>
+        </div>
+        <button @onclick="AddNew">Add</button>
+    </div>
+    <hr />
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-1">
+                <input type="checkbox" checked="@_showAll" @onchange="@(i => RefreshList((bool)i.Value))"/>
+            </div>
+            <div class="col-11 p-2"><label>Show Ticked</label></div>
+
+        </div>
+        <div class="row align-items-center border">
+            @if (_shoppingList != null && _shoppingList.Any())
+            {
+                foreach (var item in _shoppingList.Where(x => _showAll || !x.IsBought))
+                {
+                    <div class="col-1">
+                        <input type="checkbox" checked="@item.IsBought" @onchange="@(i => SaveItem(item, i.Value))"/>
+                    </div>
+                    <div class="col-10 p-2">
+                        @item.Name ( @item.Quantity@item.Unit)
+                    </div>
+                    <div class="col p-2">
+                        <button class="btn btn-danger" @onclick="@(_ => DeleteItem(item))" >
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+
+<style>
+    .btn-danger{
+        color: #000;
+        background-color: transparent;
+        border: none;
+    }
+</style>

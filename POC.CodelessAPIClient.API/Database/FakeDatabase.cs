@@ -11,7 +11,7 @@ public class FakeDatabase : IFakeDatabase
         _shoppingList = new ShoppingList()
         {
             Name = "Shopping List for Tesco",
-            Date = DateTime.UtcNow.AddDays(1)
+            Date = DateTime.UtcNow
         };
     }
 
