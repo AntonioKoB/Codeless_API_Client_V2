@@ -22,7 +22,13 @@ public class Program
             http.BaseAddress = new Uri(configs.ApiUrl.TrimEnd('/') + "/");
         });
 
-        builder.Services.AddSingleton<IAuthorizedClient, AuthFakeClient>();
+        // Register typed HttpClient for AuthClassicClient using base URL from configs
+        builder.Services.AddHttpClient<IAuthorizedClient, AuthClassicClient>((sp, http) =>
+        {
+            http.BaseAddress = new Uri(configs.ApiUrl.TrimEnd('/') + "/");
+            // Add Authorisation header
+            http.DefaultRequestHeaders.Add("Authorization", $"Bearer {configs.ApiBearerToken}");
+        });
 
         var app = builder.Build();
 
