@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using POC.CodelessAPIClient.WebApp.HttpClients;
+using Refit;
 
 namespace POC.CodelessAPIClient.WebApp.Components.Pages;
 
@@ -20,6 +21,13 @@ public partial class Home
 
     private async Task GetAuthorized()
     {
-        _authString = await AuthClient.GetAuthorization();
+        try
+        {
+            _authString = await AuthClient.GetAuthorization();
+        }
+        catch (ApiException ex)
+        {
+            _authString = ex.ReasonPhrase;
+        }
     }
 }

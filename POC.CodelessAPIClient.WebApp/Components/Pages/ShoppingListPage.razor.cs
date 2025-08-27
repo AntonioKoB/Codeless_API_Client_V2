@@ -73,7 +73,7 @@ public partial class ShoppingListPage : ComponentBase
         {
             _isLoading = true;
             StateHasChanged();
-            await Client.RemoveItem(item);
+            await Client.RemoveItem(item.Id!.Value);
 
             await RefreshList();
 
